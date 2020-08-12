@@ -33,3 +33,29 @@ Todas estas funciones están ya programadas e integradas en una DLL que Steam no
 
 ![](https://i.imgur.com/oWSeqzQ.png)  
 *source: https://gramps.github.io/GodotSteam/tutorials-initializing.html*
+
+### El verdugo
+Para un cracker, lo más sencillo es interceptar las llamadas que hace tu juego sobre la API de Steam, modificando la respuesta.
+¿Qué ocurriría si un cracker consigue que la DLL de Steam devuelva `true` siempre a la pregunta de `Steam.IsSubscribed()`? Pues que tu juego pensaría que el usuario/jugador posee una copia legítima en Steam, ya que la DLL siempre devolvería `true`. Bien pues esta técnica es la herramienta principal de los crackers hoy en día. Pero... cómo lo consiguen? Muy fácil, intercambiando la DLL oficial de Steam por una DLL modificada. Veamos un ejemplo real...
+
+# Emuladores de Steam, la navaja suiza de los crackers
+Este es el método más usado hoy en día para piratear juegos de Steam. En internet existen implementaciones/copias de la DLL oficial de Steam `steam_api64.dll` ligeramente modificadas para que ciertas funciones devuelvan siempre el mismo resultado sin preguntar a los servidores oficiales de Steam. Haciendo que, por ejemplo, siempre devuelvan `true` cuando el juego llama a la función `Steam.IsSubscribed()`. El cracker simplemente tiene que hacer lo siguiente:
+
+- Comprar el juego oficial en Steam.
+- Descargar el juego e instalarlo.
+- Crear una copia de los ficheros/juego en otra carpeta.
+- Cambiar el fichero `steam_api64.dll` oficial por el `steam_api64.dll` crackeado del emulador.
+- Comprobar que el juego se ejecuta con la DLL pirata.
+- Desinstalar el juego.
+- Devolver el juego (refund) para recuperar el dinero.
+- Subir un ZIP con la copia del juego + DLL pirata a una web de torrents.
+
+Uno de los emuladores más utilizados actualmente es el [SteamEmu de Goldberg](https://gitlab.com/Mr_Goldberg/goldberg_emulator), no estoy dando información secreta ni mucho menos. Cualquiera que descargue un juego pirata y examine la DLL verá que pone Goldberg. Es información ampliamente conocida en los foros de internet.
+
+Para este ejemplo tenemos el código fuente oficial de la DLL pirata, y podemos comprobar como han re-implementado la función `Steam.IsSubscribed()`:
+
+    bool Steam_Apps::BIsSubscribed()
+    {
+        PRINT_DEBUG("BIsSubscribed\n");
+        return true;
+    }
