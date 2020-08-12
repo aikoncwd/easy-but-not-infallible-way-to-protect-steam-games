@@ -63,13 +63,57 @@ Para este ejemplo tenemos el código fuente oficial de la DLL pirata, y podemos 
 Imprime una línea de debug y devuelve true!!! independientemente de que el usuario haya comprado o no el juego. Otras muchas funciones de la DLL oficial han sido modificadas, como por ejemplo la compra de DLCs. Esto es un verdadero horror, ya que cambiando la DLL oficial por la DLL del emulador consiguen que el propio juego no sepa que está siendo pirateado.
 
 # Identificando una copia pirata
-Tenemos diferentes formas para ello. Podemos comprobar la ruta/path del juego, comprobar los argumentos adicionales de ejecución, comprar la existencia de ciertos ficheros o carpetas, etc... pero empezaremos por lo más obvio: Que el juego detecte si el fichero `steam_api64.dll` es el oficial o una modificado.
+Tenemos diferentes formas para ello. Podemos comprobar la ruta/path del juego, comprobar los argumentos adicionales de ejecución, comprobar la existencia de ciertos ficheros o carpetas, etc... pero empezaremos por lo más obvio: Que el juego detecte si el fichero `steam_api64.dll` es el oficial o una modificado.
 
 ### Comprobando la autenticidad de steam_api64.dll
+En informatica y en el mundo de las telecomunicaciones existe algo llamado [checksum](https://en.wikipedia.org/wiki/Checksum). Básicamente es una función que realiza cálculos matemáticos sobre una serie de datos y devuelve un resultado. Un mismo fichero siempre tiene el mismo resultado, si cambiamos una sola letra de ese fichero, el resultado de su checksum será diferente. De esta forma es muy fácil garantizar la integridad de una información o fichero.
 
+Existen varias funciones checksum, no voy a entrar en detalles, pero las más utilizadas con CRC32, MD5 y SHA256. Lo primero que haremos será calcular el checksum de la DLL oficial:
 
+![](https://i.imgur.com/oMTuXmM.png)
+
+El checksum SHA256 de `steam_api64.dll` oficial es: `A178F19A516023EFC3CC30B1E90FBEDA838D08D4F1FA006B895608D67FA60EAC`
+Si calculamos ahora el SHA256 de la DLL pirata de Goldberg, obtendremos un checksum muy diferente: `43C19ECECD799332CC09A56A11A99E90E1FC884061B046F9D1E7203330A3B721`
+
+Con una simple función podemos calcular el SHA256 de la DLL del juego y si no coincide con `A178F19A516023EFC3CC30B1E90FBEDA838D08D4F1FA006B895608D67FA60EAC` sabremos indudablemente que el juego es pirata. En ese momento levantaremos un flag para, horas más tarde, mostrar una advertencia o bloquear el juego. Os dejo un ejemplo en Godot:
+
+    func check1() -> bool:
+	    # piracy flag
+        var yar = false
+	    var file = File.new()
+	
+	    if file.file_exists("./steam_api64.dll"):
+		    if file.get_sha256("./steam_api64.dll") != "a178f19a516023efc3cc30b1e90fbeda838d08d4f1fa006b895608d67fa60eac":
+			    yar = true
+	    else:
+		    yar = true
+	    return yar
 
 ### Comprobando la existencia de ficheros/carpetas no oficiales
+Después de investigar sobre el funcionamiento del emulador de Goldberg, descubrí que suele tener un fichero llamado `local_save.txt` y una carpeta llamada `steam_settings`. No es obligatorio que el juego pirata tenga esos ficheros pero el 100% de juegos piratas que he visto lo tienen, así que siempre es bueno añadir esta comprobación. Os dejo un ejemplo de mi juego "real/oficial" y otra foto del juego pirateado para que veais las diferencias y los ficheros:
+
+![](https://i.imgur.com/famnOSU.png)  
+Carpeta real. No exite `local_save.txt` ni `steam_settings`. El tamaño de la DLL es pequeño, 257Kb
+
+![](https://i.imgur.com/CCVsIUq.png)  
+Juego pirata! Existe el fichero `local_save.txt` y la carpeta `steam_settings`. La DLL está modificada, su tamaño es enorme!! Aunque eso lo estamos verificando con el checksum, en el punto anterior.
+
+Sabiendo esto, podemos añadir nuevas comprobaciones dentro del código del juego:
+
+    func check2() -> bool:
+        # piracy flag
+	    var yar = false
+	    var file = File.new()
+	    var dir = Directory.new()
+
+	    if dir.open("./steam_settings") == OK:
+		    yar = true
+	
+	    if file.file_exists("./steam_api64.dll"):
+		    yar = true
+         return yar
+
+
 
 ### Comprobando los argumentos adicionales de ejecución
 
