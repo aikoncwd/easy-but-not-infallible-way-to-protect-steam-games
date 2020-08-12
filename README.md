@@ -31,6 +31,5 @@ Queremos publicar nuestro juego en Steam, y por tanto hemos de utilizar su SDK o
 
 Todas estas funciones están ya programadas e integradas en una DLL que Steam nos ofrece llamada `steam_api.dll` o `steam_api64.dll`, el listado de funciones disponibles lo tenemos [aquí](https://partner.steamgames.com/doc/api). Este es nuestro protector, ya que podemos de una forma fácil y rápida comprobar si el usuario actual tiene Steam abierto, y si lo tiene, comprobar si posee (ha comprado) nuestro juego. Dicha comprobación se obtiene a través de la función [BIsSubscribed](https://partner.steamgames.com/doc/api/ISteamApps). Os dejo un ejemplo:
 
-![](https://i.imgur.com/oWSeqzQ.png)
-
+![](https://i.imgur.com/oWSeqzQ.png)  
 *source: https://gramps.github.io/GodotSteam/tutorials-initializing.html*
