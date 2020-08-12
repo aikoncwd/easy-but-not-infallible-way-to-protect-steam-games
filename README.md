@@ -95,8 +95,10 @@ Después de investigar sobre el funcionamiento del emulador de Goldberg, descubr
 ![](https://i.imgur.com/famnOSU.png)  
 Carpeta real. No exite `local_save.txt` ni `steam_settings`. El tamaño de la DLL es pequeño, 257Kb
 
+
 ![](https://i.imgur.com/CCVsIUq.png)  
 Juego pirata! Existe el fichero `local_save.txt` y la carpeta `steam_settings`. La DLL está modificada, su tamaño es enorme!! Aunque eso lo estamos verificando con el checksum, en el punto anterior.
+
 
 Sabiendo esto, podemos añadir nuevas comprobaciones dentro del código del juego:
 
@@ -109,12 +111,57 @@ Sabiendo esto, podemos añadir nuevas comprobaciones dentro del código del jueg
 	    if dir.open("./steam_settings") == OK:
 		    yar = true
 	
-	    if file.file_exists("./steam_api64.dll"):
+	    if file.file_exists("./local_save.txt"):
 		    yar = true
          return yar
 
-
-
 ### Comprobando los argumentos adicionales de ejecución
+Este método me encanta. Independientemente de la DLL o de los ficheros, podemos comprobar la manera en la que el usuario ejecuta el juego.
+Cuando publicamos una aplicación en Steam, podemos indicar los argumentos adicionales para ejecutar nuestro juego, pongo un ejemplo:
+
+![](https://i.imgur.com/ZRWcI9Z.png)  
+Aquí básicamente indicamos a Steam que para ejecutar nuestro juego en Windows, tiene que ejecutar `game.exe -none`. Aunque el usuario ejecute el juego desde un acceso directo, desde la biblioteca o desde juegos recientes... Steam siempre pasará el argumento `-none` al ejecutable. Si alguien piratea nuestro juego, lo ejecutará directamente sin el cliente de Steam y por tanto jamás pasará el argumento. De esta manera podemos añadir nuestra tercera comprobación:
+
+    func check3() -> bool:
+        # piracy flag
+	    var yar = false
+	
+	    if OS.get_cmdline_args():
+		    if OS.get_cmdline_args()[0] != "-none":
+			    yar = true
+	    else:
+		    yar = true
+	    return yar
 
 ### Proteger la integridad del motor
+Finalmente toca proteger el ejecutable de Godot. Queremos evitar que el cracker intente modificar el engine para hacer por ejemplo que la función `get_sha256()` de vuelva siempre el hash correcto, o para evitar que la función `file_exists()` o `get_cmdline_args()` devuelvan valores precocinados y modificados... Comprobaremos el checksum del ejecutable para verificar si el cracker lo ha modificado. Primero calculamos el checksum real:
+
+![](https://i.imgur.com/yqgy7Xy.png)  
+Obtenemos un SHA256 de: `E5161680DBD7FBFB1D8D63A1F707AC0FF48CB15E3591EB4E01DDA824EB1667C9`, así que procedemos ha añadir el check final:
+
+    func check4() -> bool:
+        #piracy flag	
+	    var yar = false
+	    var file = File.new()
+
+	    if file.file_exists("./game.exe"):
+		    if file.get_sha256("./game.exe").to_upper() != "E5161680DBD7FBFB1D8D63A1F707AC0FF48CB15E3591EB4E01DDA824EB1667C9":
+			    yar = true
+	    else:
+		    yar = true
+	    return yar
+
+# Implementar la protección
+Ahora tenemos 4 funciones que devolverán `true` si el juego se ejecuta de forma "pirata" o `false` si se ejecuta de forma legítima y dentro de Steam. Toca decidir qué hacer en caso de detectar el pirateo.
+Lo primero que s enos pasa por la cabeza es realizar estas comprobaciones al arrancar el juego y cerrarlo automáticamente si descibrimos que es pirata, pero esto es muy contraproducente ya que el cracker comprobará si el juego se ejecuta antes de publicar el torrent.
+
+Si el cracker descubre que el juego tiene protección, empezará a utilizar técnicas más agresivas hasta decompilar el juego y saltarse nuestra protección. Yo os recomiendo que estas comprobaciones las hagáis tras un tiempo. Dejad jugar al pirata un par de niveles o un par de horas y luego mostrar un mensaje amigable indicando que el juego es pirata, que por favor lo compre en Steam. Queremos convertir piratas en compradores, así que lo mejor es poner las cosas fáciles.
+
+En el caso de Cursed Gem, decidí que el actual "savegame" sea compatible con la versión oficial, de esta manera un jugador pirata podría comprar el juego y continuar jugando sin repetir los primeros niveles.
+Otros desarrolladores han optado por "marcar" los jugadores piratas con alguna skin diferente, sombrero, loro, etc... de esta manera les imposibilitas la opción de hacer streaming o youtube sin pasar por la vergüenza pública de ser un pirata confeso.
+
+Si finalmente decides que quieres bloquear el acceso del juego, puedes usar opciones elegantes. Por ejemplo en GTA-IV, la cámara del jugador se mueve en zig-zag, simulando estar borracho. Haciendo que sea complicadísimo avanzar. En el juego Mafia (creo), era imposible subirse a los coches. En el caso de Cursed Gem, el salto se reduce a la mitad, haciendo que sea imposible avanzar en la aventura:
+
+![](https://i.imgur.com/q8Oij57.gif)
+
+Mi recomendación es que repartas las 4 comprobaciones en diferentes zonas del juego, haciendo que la tarea de destripar el código sea más compleja. También puedes hacer que una comprobación salte en el nivel 2, y la otra en el nivel 3. Así si el cracker limpia la protección del nivel 2, nunca sabrá que el mensaje salta d enuevo más adelante. Los crackers no completan ni juegan a los juegos, simplemente aplican el crack y compruban que el juego arranca.
