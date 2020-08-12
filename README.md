@@ -39,7 +39,7 @@ Para un cracker, lo más sencillo es interceptar las llamadas que hace tu juego 
 ¿Qué ocurriría si un cracker consigue que la DLL de Steam devuelva `true` siempre a la pregunta de `Steam.IsSubscribed()`? Pues que tu juego pensaría que el usuario/jugador posee una copia legítima en Steam, ya que la DLL siempre devolvería `true`. Bien pues esta técnica es la herramienta principal de los crackers hoy en día. Pero... cómo lo consiguen? Muy fácil, intercambiando la DLL oficial de Steam por una DLL modificada. Veamos un ejemplo real...
 
 # Emuladores de Steam, la navaja suiza de los crackers
-Este es el método más usado hoy en día para piratear juegos de Steam. En internet existen implementaciones/copias de la DLL oficial de Steam `steam_api64.dll` ligeramente modificadas para que ciertas funciones devuelvan siempre el mismo resultado sin preguntar a los servidores oficiales de Steam. Haciendo que, por ejemplo, siempre devuelvan `true` cuando el juego llama a la función `Steam.IsSubscribed()`. El cracker simplemente tiene que hacer lo siguiente:
+Este es el método más usado hoy en día para piratear juegos de Steam. En internet existen implementaciones/copias de la DLL oficial de Steam `steam_api64.dll` ligeramente modificadas para que ciertas funciones devuelvan siempre el mismo resultado sin preguntar a los servidores oficiales de Steam. Estas implementaciones de la DLL se conocen como "emuladores". Haciendo que, por ejemplo, siempre devuelvan `true` cuando el juego llama a la función `Steam.IsSubscribed()`. El cracker simplemente tiene que hacer lo siguiente:
 
 - Comprar el juego oficial en Steam.
 - Descargar el juego e instalarlo.
@@ -59,3 +59,18 @@ Para este ejemplo tenemos el código fuente oficial de la DLL pirata, y podemos 
         PRINT_DEBUG("BIsSubscribed\n");
         return true;
     }
+
+Imprime una línea de debug y devuelve true!!! independientemente de que el usuario haya comprado o no el juego. Otras muchas funciones de la DLL oficial han sido modificadas, como por ejemplo la compra de DLCs. Esto es un verdadero horror, ya que cambiando la DLL oficial por la DLL del emulador consiguen que el propio juego no sepa que está siendo pirateado.
+
+# Identificando una copia pirata
+Tenemos diferentes formas para ello. Podemos comprobar la ruta/path del juego, comprobar los argumentos adicionales de ejecución, comprar la existencia de ciertos ficheros o carpetas, etc... pero empezaremos por lo más obvio: Que el juego detecte si el fichero `steam_api64.dll` es el oficial o una modificado.
+
+### Comprobando la autenticidad de steam_api64.dll
+
+
+
+### Comprobando la existencia de ficheros/carpetas no oficiales
+
+### Comprobando los argumentos adicionales de ejecución
+
+### Proteger la integridad del motor
