@@ -29,6 +29,7 @@ La victima, por suerte o por desgracia, será nuestro juego. Al tratarse de un p
 ### El protector
 Queremos publicar nuestro juego en Steam, y por tanto hemos de utilizar su SDK oficial. Para que nuestro juego pueda "hablar" con Steam, haremos llamadas utilizando su DLL como pasarela. Por ejemplo si queremos desbloquear un logro, el juego simplemente cargará la librería de Steam y llamará a la función `Steam.setAchievement("achievement_example")`, si queremos comprobar si Steam está ejecutándose en el PC podemos llamar a la función `Steam.loggedOn()`, o si queremos comprobar el ID del jugador de Steam, podemos llamar la función `Steam.getSteamID()`.
 
-Todas estas funciones están ya programadas e integradas en una DLL que Steam nos ofrece llamada `steam_api.dll` o `steam_api64.dll`, el listado de funciones disponibles lo tenemos [aquí](https://partner.steamgames.com/doc/api). Este es nuestro protector, ya que podemos de una forma fácil y rápida comprobar si el usuario actual tiene Steam abierto, y si lo tiene, comprobar si posee (ha comprado) nuestro juego. Dicha comprobación se obtiene a través de la función [BIsSubscribed](https://partner.steamgames.com/doc/api/ISteamApps). Os dejo un ejemplo
+Todas estas funciones están ya programadas e integradas en una DLL que Steam nos ofrece llamada `steam_api.dll` o `steam_api64.dll`, el listado de funciones disponibles lo tenemos [aquí](https://partner.steamgames.com/doc/api). Este es nuestro protector, ya que podemos de una forma fácil y rápida comprobar si el usuario actual tiene Steam abierto, y si lo tiene, comprobar si posee (ha comprado) nuestro juego. Dicha comprobación se obtiene a través de la función [BIsSubscribed](https://partner.steamgames.com/doc/api/ISteamApps). Os dejo un ejemplo:
 
-<p align="center">![](https://i.imgur.com/oWSeqzQ.png)</p>
+![](https://i.imgur.com/oWSeqzQ.png)
+*source: https://gramps.github.io/GodotSteam/tutorials-initializing.html*
