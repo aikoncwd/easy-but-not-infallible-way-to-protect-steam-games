@@ -168,13 +168,13 @@ Si finalmente decides que quieres bloquear el acceso del juego, puedes usar opci
 Mi recomendación es que repartas las 4 comprobaciones en diferentes zonas del juego, haciendo que la tarea de destripar el código sea más compleja. También puedes hacer que una comprobación salte en el nivel 2, y la otra en el nivel 3. Así si el cracker limpia la protección del nivel 2, nunca sabrá que el mensaje salta de nuevo más adelante. Los crackers no completan ni juegan a los juegos, simplemente aplican el crack y compruban que el juego arranca.
 
 # Algo a tener en cuenta si tu juego es multiplataforma
-Si tu juego decides publicarlo para Linux y MacOS, a parte de Steam, es necesario que apliques estas protecciones únicamente en la versión Windows. Los checksum son diferentes en otro sistema operativo, así que tendrás que comprobar esto primero, te pongo un ejemplo:
+Si tu juego decides publicarlo para Linux y MacOS, es necesario que apliques estas protecciones únicamente en la versión Windows. Los checksum son diferentes en otro sistema operativo, así que tendrás que comprobar esto primero, te pongo un ejemplo:
 
     if OS.get_name() != "Windows":
 	    return false
 
 De esta manera si el juego no es de Windows, no realizaré ninguna comprobación. Las versiones piratas de los juegos son practicamente inexistentes para Linux y MacOS. Pero eso ya lo dejo en tus manos si deseas aplicar protecciones en esos sistemas
 
-# Perdón por insistir: Este método no es infalible al 100%
+# Perdón por insistir: Este método no es infalible 100%
 Me estoy repitiendo mucho, pero quiero dejar esto bien claro: **Ni este sistema ni ningún otro sistema es 100% efectivo contra el pirateo.**
 La parte fuerte de este sistema es poder detectar una versión pirata y lanzar el aviso horas más tarde, haciendo que el cracker no sepa que tenemos una protección adicional.
